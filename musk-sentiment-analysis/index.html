@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Stock Predictor</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+      form {
+        width: 50%;
+        margin: auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        box-sizing: border-box;
+      }
+      input[type="submit"] {
+        background-color: #333;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      input[type="submit"]:hover {
+        background-color: #555;
+      }
+      #response {
+        width: 50%;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+      }
+      #response h2 {
+        margin-top: 0;
+      }
+      #response p {
+        margin-bottom: 0;
+      }
+      #no-prediction {
+        display: none;
+        text-align: center;
+        color: #f00;
+        font-weight: bold;
+      }
+    </style>
+    <script>
+      $(function() {
+        $('form').on('submit', function(e) {
+          e.preventDefault();
+          var tweet = $('input[name="tweet"]').val();
+          $.ajax({
+            url: 'http://localhost:5000/predict',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({'tweet': tweet}),
+            success: function(response) {
+              $('#response').show();
+              $('#no-prediction').hide();
+              var prediction = response.prediction;
+              var priceChange = response.price_change;
+              if (prediction) {
+                $('#response h2').html(prediction);
+                $('#response p').html(priceChange);
+              } else {
+                $('#no-prediction').show();
+              }
+            }
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Tesla's Stock Predictor</h1>
+    <form>
+      <input type="text" name="tweet" placeholder="Enter a new tweet...">
+      <br><br>
+      <input type="submit" value="Submit">
+    </form>
+    <div id="response" style="display: none;">
+      <h2></h2>
+      <p></p>
+    </div>
+    <div id="no-prediction">
+      <p>No prediction could be made based on the given tweet.</p>
+    </div>
+    <footer style="text-align: center;">
+      <p>Author: Satyanarayana Yegireddy</p>
+    </footer>    
+  </body>
+</html>
